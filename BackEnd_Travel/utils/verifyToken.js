@@ -6,6 +6,7 @@ const verifyToken = (req, res, next) => {
     return res.status(401).json({ success: false, message: "Access denied. You're not authorized" });
   }
 
+  //if token is valid
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
     if (err) {
       return res.status(401).json({ success: false, message: 'Invalid token' });
@@ -18,6 +19,8 @@ const verifyToken = (req, res, next) => {
 export const verifyUser = (req, res, next) => {
   verifyToken(req, res, () => {
     if (req.user.id === req.params.id || req.user.role === 'admin') {
+      console.log('req.user.id', req.user.id);
+      console.log('req.body.id', req.body.userID);
       next();
     } else {
       res.status(401).json({ success: false, message: "You're not authorized to access this resource" });

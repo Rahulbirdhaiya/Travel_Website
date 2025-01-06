@@ -20,21 +20,21 @@ const corsOptions = {
     credentials: true
 };
 
+// Database connection
+const connect = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('MongoDB database connected');
+    } catch (err) {
+        console.error('MongoDB connection failed:', err.message);
+    }
+};
+
 // Middleware
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('dev'));
-
-// Database connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch(err => {
-    console.error('Failed to connect to MongoDB', err);
-});
 
 // Routes
 app.use('/api/v1/tours', tourRoute);

@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Container, Row, Button } from 'reactstrap';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import logo from '../../assets/images/logo.png';
 import './header.css';
+import { AuthContext } from '../../context/AuthContext';
 
 const nav__links = [
   {
@@ -23,23 +24,33 @@ const nav__links = [
 const Header = () => {
   const [query, setQuery] = useState('');
   const headerRef = useRef(null);
+  const navigate = useNavigate();
+  const { user, dispatch } = useContext(AuthContext);
 
-  const handleScroll = () => {
-    if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
-      headerRef.current.classList.add('sticky__header');
-    } else {
-      headerRef.current.classList.remove('sticky__header');
-    }
+  const logout = () => {
+    dispatch({ type: 'LOGOUT' });
+    navigate('/');
+  };
+
+  const stickyHeaderFunc = () => {
+    window.addEventListener('scroll', () => {
+      if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
+        headerRef.current.classList.add('sticky__header');
+      } else {
+        headerRef.current.classList.remove('sticky__header');
+      }
+    });
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    stickyHeaderFunc();
+    return () => window.removeEventListener('scroll', stickyHeaderFunc);
   }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
     console.log('Search query:', query);
+
     // Add your search functionality here
   };
 
@@ -109,20 +120,26 @@ const Header = () => {
               </button>
             </form>
             {/* =====search bar end ===== */}
-            <div className="nav__right d-flex align-items-center gap-4">
-              <div className="nav__btns d-flex align-items-center gap-4">
-                <Button className='btn secondary__btn loginBtn'>
-                  <Link to={'/login'}>Login</Link>
+            {
+              user ? (<>
+              <h5 className = 'mb-0'>{user.username}</h5>
+              <Button className='btn btn-dark' onClick={logout}>Logout</Button>
+              </> ) : ( <>
+              <Button className='btn secondary__btn'>
+                <Link to={'/login'}>Login</Link>
                 </Button>
                 <Button className='btn primary__btn'>
                   <Link to={'/register'}>Register</Link>
-                </Button>
-              </div>
-              <span className="mobile__menu">
-                <i className="ri-menu-line"></i>
-              </span>
-            </div>
+                  </Button>
+                  </>
+                  )
+            }
+          <div>
+            <span className="mobile__menu">
+              <i className="ri-menu-line"></i>
+            </span>
           </div>
+        </div>
         </Row>
       </Container>
     </header>

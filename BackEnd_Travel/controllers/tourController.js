@@ -90,24 +90,19 @@ export const getSingleTour = async(req,res)=>{
 
 // get all tours with pagination
 export const getAllTour = async (req, res) => {
-  const page = parseInt(req.query.page) || 0;
-  const limit = parseInt(req.query.limit) || 8;
+  const page = parseInt(req.query.page);
 
   try {
     const tours = await Tour.find({})
       .populate('reviews')
-      .skip(page * limit)
-      .limit(limit);
+      .skip(page *8).limit(8);
 
-    const totalTours = await Tour.countDocuments();
 
     res.status(200).json({
       success: true,
-      message: 'Successfully fetched all tours',
+      message: 'Successfully find all tours',
       data: tours,
-      totalTours,
-      totalPages: Math.ceil(totalTours / limit),
-      currentPage: page
+      count: tours.length
     });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to fetch tours' });
@@ -116,20 +111,30 @@ export const getAllTour = async (req, res) => {
 
 // get tour by search
 export const getTourBySearch = async (req, res) => {
-  const { city, distance, maxGroupSize } = req.query;
-
+        const city = new RegExp(req.query.city, 'i')
+        const distance = parseInt(req.query.distance)
+        const maxGroupSize = parseInt(req.query.maxGroupSize)
   try {
+
     const tours = await Tour.find({
-      city: new RegExp(city, 'i'),
-      distance: { $gte: parseInt(distance) },
-      maxGroupSize: { $gte: parseInt(maxGroupSize) }
+      city,
+      distance: { $gte:distance },
+      maxGroupSize: { $gte:maxGroupSize}
     }).populate('reviews');
 
+    if (tours.length>0) {
     res.status(200).json({
       success: true,
       message: 'Successfully fetched tours',
       data: tours
     });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'No tours found',
+        data: tours
+      });
+    }
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to fetch tours' });
   }

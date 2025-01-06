@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import '../styles/login.css'
 
 import { Button, Col, Container, Form, FormGroup, Row } from 'reactstrap'
@@ -6,14 +6,16 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import registerImg from '../assets/images/register.png'
 import userIcon from '../assets/images/user.png'
+import { AuthContext } from '../context/AuthContext'
+import { BASE_URL } from '../utils/config'
 
 const Register = () => {
   const [credentials, setCredentials] = useState({
-    username: '',
-    email: '',
-    password: ''
+    username: undefined,
+    email: undefined,
+    password: undefined
   })
-
+  const { dispatch } = useContext(AuthContext)
   const navigate = useNavigate()
 
   const handleChange = e => {
@@ -23,7 +25,7 @@ const Register = () => {
   const handleClick = async e => {
     e.preventDefault()
     try {
-      const response = await fetch('http://localhost:4000/api/v1/auth/register', {
+      const res = await fetch(`${BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -31,14 +33,12 @@ const Register = () => {
         body: JSON.stringify(credentials)
       })
 
-      const data = await response.json()
-      if (data.success) {
+      const result = await res.json()
+      if (!res.ok) alert(result.message)
+        dispatch({ type: 'REGISTER_SUCCESS', payload: result.data })
         navigate('/login')
-      } else {
-        alert(data.message)
-      }
     } catch (err) {
-      console.error('Failed to register:', err)
+      alert(err.message)
     }
   }
 

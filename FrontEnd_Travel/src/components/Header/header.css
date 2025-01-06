@@ -12,7 +12,7 @@
   
   .menu {
     margin-bottom: 0;
-    margin-right: 50px;
+    margin-right: 2rem;
   }
   
   .nav__item a {
@@ -34,6 +34,7 @@
     font-size: 1.3rem;
     color: var(--heading-color);
     display: none;
+    margin-left: 2rem;
   }
   
   .btn {
@@ -45,7 +46,7 @@
 
   .loginBtn {
     color: var(--secondary-color);
-    margin-left: 50px;
+    margin-left: 15rem;
   }
   .btn:hover {
     scale: 105%;
@@ -88,6 +89,7 @@
     margin: 0px;
     opacity: 1;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin-right: 3rem;
   }
   
   .search-input {
@@ -151,4 +153,8 @@
     -webkit-appearance: none;
     appearance: none;
     color: black;
+}
+
+.mb-0 {
+    margin-right: 2rem;
 }
